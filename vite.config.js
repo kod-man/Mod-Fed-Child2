@@ -1,7 +1,26 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import federation from "@originjs/vite-plugin-federation";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
-})
+  plugins: [
+    react(),
+    federation({
+      name: "child2",
+      remotes: {
+        parent: "http://localhost:5173/assets/remoteEntry.js",
+      },
+      shared: ["react", "react-dom"],
+      filename: "remoteEntryChild2.js",
+      exposes: {
+        "./Contact": "./src/pages/Contact",
+      },
+    }),
+  ],
+  build: {
+    modulePreload: false,
+    target: "esnext",
+    minify: false,
+    cssCodeSplit: false,
+  },
+});
